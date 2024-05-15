@@ -1,5 +1,7 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, flash, redirect, url_for
+from flask_login import login_required
 
+from src.forms.categoria import NovoCategoriaForm
 from src.modules import db
 from src.models.categoria import Categoria
 import sqlalchemy as sa
@@ -29,4 +31,5 @@ def add():
         return redirect(url_for('categoria.lista'))
 
     return render_template('categoria/add.jinja2',
+                           title="Nova categoria",
                            form=form)
