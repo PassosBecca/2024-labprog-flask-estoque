@@ -16,3 +16,17 @@ def lista():
                            rset=rset)
 
 
+@bp.route('/add',methods=['GET','POST'])
+@login_required
+def add():
+    form = NovoCategoriaForm()
+    if form.validate_on_submit():
+        categoria = Categoria()
+        categoria.nome = form.nome.data
+        db.session.add(categoria)
+        db.session.commit()
+        flash(f"Categoria' {form.nome.data} 'adicionada")
+        return redirect(url_for('categoria.lista'))
+
+    return render_template('categoria/add.jinja2',
+                           form=form)
