@@ -1,7 +1,7 @@
 {
   "SECRET_KEY": "algumaCoisaGrandeEAleatorio",
   "BOOTSTRAP_SERVE_LOCAL": true,
-  "BOOTSTRAP_BOOTSWATCH_THEME": "cerulean",
+  "_BOOTSTRAP_BOOTSWATCH_THEME": "cerulean",
 
   "MINIFY": false,
 
@@ -13,6 +13,10 @@
   "DEFAULT_USER_EMAIL": "user@user.com.br",
   "DEFAULT_USER_PASSWORD": "123",
 
-  "TIMEZONE": "America/Sao_Paulo"
-
+  "SENDGRID_API_KEY": "SuaSenha",
+  "MAIL_SERVER": "smtp.sendgrid.net",
+  "MAIL_PORT": 587,
+  "MAIL_USERNAME": "apikey",
+  "MAIL_PASSWORD": "SuaSenha",
+  "MAIL_BACKEND": "console"
 }

@@ -5,6 +5,7 @@ from flask_minify import Minify
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
 from sqlalchemy.orm import DeclarativeBase
+from flask_mailman import Mail
 
 
 class Base(DeclarativeBase):

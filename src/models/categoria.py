@@ -13,5 +13,3 @@ class Categoria(db.Model, BasicRepositoryMixin, TimeStampMixin):
                                      default=uuid.uuid4)
     nome: Mapped[str] = mapped_column(String(128),
                                       nullable=False)
-
-
