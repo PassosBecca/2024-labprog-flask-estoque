@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, flash, redirect, url_for
+from flask import Blueprint, render_template, flash, redirect, url_for, request
 from flask_login import login_required
 
-from src.forms.categoria import NovoCategoriaForm
+from src.forms.categoria import NovoCategoriaForm, EditarCategoriaForm
 from src.modules import db
 from src.models.categoria import Categoria
 import sqlalchemy as sa
@@ -32,4 +32,23 @@ def add():
 
     return render_template('categoria/add.jinja2',
                            title="Nova categoria",
+                           form=form)
+
+@bp.route('/edit/<uuid:id_categoria>',methods=['GET','POST'])
+@login_required
+def edit(id_categoria):
+    categoria = Categoria.get_by_id(id_categoria)
+    if categoria is None:
+        flash("Categoria Inexistente", category='warning')
+        return redirect(url_for('categoria.lista'))
+
+    form = EditarCategoriaForm(request.values, obj=categoria)
+    if form.validate_on_submit():
+        categoria.nome = form.nome.data
+        db.session.commit()
+        flash("Categoria Alterada", category='success')
+        return redirect(url_for('categoria.lista'))
+
+    return render_template('categoria/edit.jinja2',
+                           title="Alterar categoria",
                            form=form)
