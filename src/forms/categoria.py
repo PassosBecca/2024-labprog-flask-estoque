@@ -1,18 +1,12 @@
 from flask_wtf import FlaskForm
-from wtforms.fields.simple import SubmitField, StringField
+from wtforms.fields.simple import StringField, SubmitField
 from wtforms.validators import InputRequired
 
 
 class NovoCategoriaForm(FlaskForm):
-    nome = StringField('Nome da Categoria', validators=[InputRequired(message="É obrigatório informar um nome para a categoria")])
+    nome = StringField("Nome da categoria", validators=[InputRequired(message="É obrigatório infomar um nome para a categoria")])
     submit = SubmitField("Adicionar")
 
-class EditarCategoriaForm(FlaskForm):
-    nome = StringField('Nome da Categoria',
-                       validators=[
-                           InputRequired(message="É  obrigatório informar um nome para a categoria")])
+class EditCategoriaForm(FlaskForm):
+    nome = StringField("Nome da categoria", validators=[InputRequired(message="É obrigaório infomar um nome para a categoria")])
     submit = SubmitField("Alterar")
-
-
-class EditCategoriaForm:
-    pass
