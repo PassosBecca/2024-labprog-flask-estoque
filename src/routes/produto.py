@@ -41,6 +41,7 @@ def add():
         if categoria is None:
             flash("Categoria inxeistente !", category='danger')
             return redirect(url_for('produto.add'))
+        produto.categoria = categoria
         db.session.add(produto)
         db.session.commit()
         flash("Produto adicionado com sucesso!")
@@ -48,6 +49,16 @@ def add():
 
     return render_template('produto/add_edit.jinja2', form=form,
                            title='Adicionar novo produto')
+
+@bp.route('/lista', methods=['GET', 'POST'])
+@bp.route('/', methods=['GET', 'POST'])
+def lista():
+    sentenca = db.select(Produto).order_by(Produto.nome)
+    rset = db.session.execute(sentenca).scalars()
+
+    return render_template('produto/lista.jinja2',
+                           title='Lista de produtos',
+                           rset=rset)
 
 @bp.route('/imagem/<uuid:id_produto>', methods=['GET'])
 def imagem(id_produto):
