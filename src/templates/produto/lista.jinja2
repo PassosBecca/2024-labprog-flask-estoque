@@ -18,11 +18,13 @@
             <td>{{ produto.estoque }}</td>
             <td>{% if produto.ativo %}Ativo{% else %}Inativo{% endif %}</td>
             <td class="text-end">{{  produto.preco }}</td>
-        <td class="text-center"><a href="#"
+
+            <td class="text-center"><a href="#"
                 onclick="return confirm('Confirma a remoção do produto?')">
                 {{ render_icon ('trash', color= 'danger') }}</a>
-                <a href="#">
-                    {{ render_icon('pencil-square') }}</a></td>
+                <a href="{{ url_for('produto.edit', produto_id = produto.id) }}">
+                    {{ render_icon('pencil-square', color='primary', size='1.25em') }}</a>
+            </td>
         </tr>
     {% endfor %}
     </tbody>
