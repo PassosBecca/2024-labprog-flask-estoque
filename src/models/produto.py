@@ -1,23 +1,22 @@
-import base64
 import io
 import uuid
+from base64 import b64decode
 
 from PIL import Image
 
-from sqlalchemy import Boolean, DECIMAL, ForeignKey, Integer, String, Text, Uuid
+from sqlalchemy import Boolean, DECIMAL, Integer, String, Text, Uuid, ForeignKey
 from sqlalchemy.orm import mapped_column, relationship
 from src.modules import db
 from src.models.base_mixin import BasicRepositoryMixin, TimeStampMixin
-
 
 class Produto(db.Model, BasicRepositoryMixin, TimeStampMixin):
     __tablename__ = 'produtos'
     id = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     nome = mapped_column(String(100), nullable=False, index=True)
-    preco = mapped_column(DECIMAL(10, 2), default=0.00, nullable=False)
+    preco = mapped_column(DECIMAL(10,2), default=0.00, nullable=False)
     estoque = mapped_column(Integer, default=0)
     ativo = mapped_column(Boolean, default=True, nullable=False)
-    possui_foto = mapped_column(Boolean, default=False, nullable=False)
+    possui_foto = mapped_column(Boolean, default=True, nullable=False)
     foto_base64 = mapped_column(Text, default=None, nullable=True)
     foto_mime = mapped_column(String(64), nullable=True, default=None)
     categoria_id = mapped_column(Uuid(as_uuid=True), ForeignKey('categorias.id'))
@@ -28,36 +27,34 @@ class Produto(db.Model, BasicRepositoryMixin, TimeStampMixin):
     def imagem(self):
         if not self.possui_foto:
             saida = io.BytesIO()
-            entrada = Image.new('RGB', (480,480),(128, 128, 128))
+            entrada = Image.new('RGB', (480, 480), (128, 128, 128))
             formato = "PNG"
             entrada.save(saida, format=formato)
             conteudo = saida.getvalue()
             tipo = 'image/png'
         else:
-            conteudo = base64.b64decode(self.foto_base64)
+            conteudo = b64decode(self.foto_base64)
             tipo = self.foto_mime
         return conteudo, tipo
 
-
     def thumbnail(self, size: int = 128):
         if not self.possui_foto:
-            if not self.possui_foto:
-                saida = io.BytesIO()
-                entrada = Image.new('RGB', (size, size), (128, 128, 128))
-                formato = "PNG"
-                entrada.save(saida, format=formato)
-                conteudo = saida.getvalue()
-                tipo = 'image/png'
+            saida = io.BytesIO()
+            entrada = Image.new('RGB', (size, size), (128, 128, 128))
+            formato = "PNG"
+            entrada.save(saida, format=formato)
+            conteudo = saida.getvalue()
+            tipo = 'image/png'
         else:
-            arquivo = io.BytesIO(base64.b64decode(self.foto_base64))
+            arquivo = io.BytesIO(b64decode(self.foto_base64))
             saida = io.BytesIO()
             entrada = Image.open(arquivo)
             formato = entrada.format
             (largura, altura) = entrada.size
             fator = min(size/largura, size/altura)
-            novo_tamanho = (int(altura*fator), int(altura*fator))
+            novo_tamanho = (int(largura * fator), int(altura * fator))
             entrada.thumbnail(novo_tamanho)
             entrada.save(saida, format=formato)
             conteudo = saida.getvalue()
-            tipo= self.foto_mime
-        return conteudo,tipo
+            tipo = self.foto_mime
+        return conteudo, tipo
