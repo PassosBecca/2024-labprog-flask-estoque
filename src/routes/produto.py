@@ -45,7 +45,7 @@ def add():
         flash("Produto adicionado!")
         return redirect(url_for('index'))
 
-    return render_template('produto/add_edit.jinja2', form=form,
+    return render_template('produto/add.jinja2', form=form,
                            title="Adicionar novo produto")
 
 @bp.route('/edit/<uuid:produto_id>', methods=['GET', 'POST'])
@@ -75,8 +75,9 @@ def edit(produto_id):
         return redirect(url_for('produto.lista'))
 
     form.categoria.process_data(str(produto.categoria_id))
-    return render_template('produto/add_edit.jinja2', form=form,
-                           title="Alterar um produto")
+    return render_template('produto/edit.jinja2', form=form,
+                           title="Alterar um produto",
+                           produto=produto)
 
 @bp.route('/lista', methods=['GET', 'POST'])
 @bp.route('/', methods=['GET', 'POST'])
