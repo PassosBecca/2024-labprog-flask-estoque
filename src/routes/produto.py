@@ -2,6 +2,7 @@ from base64 import b64encode
 
 from flask import Blueprint, flash, redirect, render_template, url_for, request, abort, Response
 from flask_login import login_required
+from werkzeug.exceptions import NotFound
 
 from src.forms.produto import ProdutoForm
 from src.models.categoria import Categoria
@@ -49,6 +50,7 @@ def add():
                            title="Adicionar novo produto")
 
 @bp.route('/edit/<uuid:produto_id>', methods=['GET', 'POST'])
+@login_required
 def edit(produto_id):
     produto = Produto.get_by_id(produto_id)
     if produto is None:
@@ -66,6 +68,15 @@ def edit(produto_id):
         produto.estoque = form.estoque.data
         produto.ativo = form.ativo.data
         categoria = Categoria.get_by_id(form.categoria.data)
+        if form.removerfoto.data:
+            produto.possui_foto = False
+            produto.foto_mime = None
+            produto.foto_base64 = None
+        elif form.foto.data:
+            produto.possui_foto = True
+            produto.foto_base64 = (b64encode(request.files[form.foto.name].read()).
+                                   decode('ascii'))
+            produto.foto_mime = request.files[form.foto.name].mimetype
         if categoria is None:
             flash("Categoria inexistente!", category='danger')
             return redirect(url_for('produto.lista'))
@@ -82,12 +93,36 @@ def edit(produto_id):
 @bp.route('/lista', methods=['GET', 'POST'])
 @bp.route('/', methods=['GET', 'POST'])
 def lista():
+    page = request.args.get('page', type=int, default=1)
+    pp = request.args.get('pp', type=int, default=25)
+
     sentenca = db.select(Produto).order_by(Produto.nome)
-    rset = db.session.execute(sentenca).scalars()
+
+    try:
+        rset = db.paginate(sentenca, page=page, per_page=pp, error_out=True)
+    except NotFound:
+        flash(f"Não temos produtos na pagina {page}. Apresentando página 1")
+        page = 1
+        rset = db.paginate(sentenca, page=page, per_page=pp, error_out=False)
 
     return render_template('produto/lista.jinja2',
                            title="Lista de produtos",
-                           rset=rset)
+                           rset=rset,
+                           page=page,
+                           pp=pp)
+
+@bp.route('/delete/<uuid:produto_id>', methods=['GET'])
+@login_required
+def delete(produto_id):
+    produto = Produto.get_by_id(produto_id)
+    if produto is None:
+        flash("Produto inexistente!", category='danger')
+        return redirect(url_for('produto.lista'))
+
+    db.session.delete(produto)
+    db.session.commit()
+    flash("Produto Removido!", category='success')
+    return redirect(url_for('produto.lista'))
 
 @bp.route('/imagem/<uuid:id_produto>', methods=['GET'])
 def imagem(id_produto):
