@@ -26,7 +26,8 @@ def add():
 
     if form.validate_on_submit():
         produto = Produto(nome = form.nome.data, preco = form.preco.data,
-                          ativo = form.ativo.data, estoque = form.estoque.data)
+                          ativo = form.ativo.data, estoque = form.estoque.data,
+                          estoque_critico=form.estoque_critico.data)
         if form.foto.data:
             produto.possui_foto = True
             produto.foto_base64 = (b64encode(request.files[form.foto.name].read()).
@@ -66,6 +67,7 @@ def edit(produto_id):
         produto.nome = form.nome.data
         produto.preco = form.preco.data
         produto.estoque = form.estoque.data
+        produto.estoque_critico = form.estoque_critico.data
         produto.ativo = form.ativo.data
         categoria = Categoria.get_by_id(form.categoria.data)
         if form.removerfoto.data:

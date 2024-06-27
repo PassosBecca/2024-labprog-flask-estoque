@@ -25,7 +25,7 @@
         <thead><tr>
             <th scope="col">Nome do produto</th>
              <th scope="col">Categoria</th>
-            <th scope="col">Estoque</th>
+            <th scope="col" class="text-end">Estoque</th>
             <th scope="col">Ativo</th>
             <th scope="col" class="text-end">Preço do produto </th>
             <th scope="col" class="text-center">Operações</th>
@@ -34,7 +34,11 @@
         {% for produto in rset %}
             <tr><td>{{ produto.nome }}</td>
                 <td>{{ produto.categoria.nome }}</td>
-                <td>{{ produto.estoque }}</td>
+                <td class="text-end">{% if produto.estoque < produto.estoque_critico %}
+                    Estoque Critico {{ render_icon ('exclamation', color= 'danger', size='1.75rem') }}
+                    {{ produto.estoque }}
+                    {% else %}{{ produto.estoque }}{% endif %}
+                </td>
                 <td>{% if produto.ativo %}Ativo{% else %}Inativo{% endif %}</td>
                 <td class="text-end">{{  produto.preco }}</td>
 
